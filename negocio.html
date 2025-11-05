@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEGOCIOS - Gestión de Precios</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 30px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            position: relative;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .sync-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+        
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        
+        .sync-indicator.syncing {
+            background: #f59e0b;
+            animation: blink 1s infinite;
+        }
+        
+        .sync-indicator.error {
+            background: #ef4444;
+            animation: none;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .controls {
+            padding: 30px 40px;
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            border-bottom: 3px solid #e8e8e8;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-upload {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.5);
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            z-index: 1;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px 14px 55px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 40px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        thead tr {
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        th {
+            padding: 22px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: none;
+        }
+        
+        th:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+        
+        th:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+        
+        tbody tr {
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 15px;
+        }
+        
+        tbody tr.ingredient-row {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 5px solid #10b981;
+        }
+        
+        tbody tr.product-row {
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+            border-left: 5px solid #8b5cf6;
+        }
+        
+        tbody tr:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        td {
+            padding: 20px;
+            border: none;
+        }
+        
+        td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+        
+        td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+        
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            padding: 12px 15px !important;
+        }
+        
+        .editable-cell:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+        }
+        
+        .editable-cell input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .editable-cell input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 8px 30px rgba(118, 75, 162, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .edit-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 18px;
+            color: #667eea;
+            pointer-events: none;
+        }
+        
+        .editable-cell:hover .edit-icon {
+            opacity: 1;
+        }
+        
+        .checkbox-cell {
+            text-align: center;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-toggle {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-delete:hover, .btn-toggle:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stats {
+            padding: 30px 40px;
+            background: linear-gradient(135deg, #f8f9fa, #e8e8e8);
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 180px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255,255,255,0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="sync-status">
+                <div class="sync-indicator" id="syncIndicator"></div>
+                <span id="syncStatus">Conectado</span>
+            </div>
+            <h1>💼 NEGOCIOS</h1>
+            <p>Gestión Inteligente de Precios - Sincronizado en Tiempo Real</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalItems">0</div>
+                <div class="stat-label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalIngredients">0</div>
+                <div class="stat-label">Ingredientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Productos</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-add" onclick="addNewRow()">
+                <span style="position: relative; z-index: 1;">➕ Agregar Item</span>
+            </button>
+            <button class="btn btn-download" onclick="downloadJSON()">
+                <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
+            </button>
+            <button class="btn btn-upload" onclick="document.getElementById('fileInput').click()">
+                <span style="position: relative; z-index: 1;">📂 Cargar JSON</span>
+            </button>
+            <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadJSON(event)">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre..." onkeyup="filterTable()">
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="negociosTable">
+                <thead>
+                    <tr>
+                        <th>TIPO</th>
+                        <th>ITEM</th>
+                        <th>COMERCIO</th>
+                        <th>PRECIO COMPRA (MERCADO)</th>
+                        <th>PRECIO VENTA (LOCALES)</th>
+                        <th>PRECIO VENTA (FINAL)</th>
+                        <th>% SATISFACCIÓN (+ 🍕/💧)</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // =============================================
+        // CONFIGURACIÓN DE FIREBASE
+        // =============================================
+        // IMPORTANTE: Reemplaza esto con tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbiCuTAjboFuk_If3EOFnk3sglmAzFlY4",
+            authDomain: "negocios-lsn.firebaseapp.com",
+            databaseURL: "https://negocios-lsn-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "negocios-lsn",
+            storageBucket: "negocios-lsn.firebasestorage.app",
+            messagingSenderId: "221131910029",
+            appId: "1:221131910029:web:ab643f05717d0f19ebebc4"
+        };
+
+        // Inicializar Firebase
+        let database;
+        let dataRef;
+        let isInitialized = false;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            dataRef = database.ref('negocios');
+            isInitialized = true;
+            updateSyncStatus('connected');
+        } catch (error) {
+            console.error('Error al inicializar Firebase:', error);
+            updateSyncStatus('error');
+            alert('⚠️ Configura Firebase para habilitar la sincronización en tiempo real.\n\nVe a: https://console.firebase.google.com');
+        }
+
+        // =============================================
+        // DATOS LOCALES (FALLBACK)
+        // =============================================
+        let data = [];
+        let isUpdatingFromFirebase = false;
+
+        // =============================================
+        // FUNCIONES DE SINCRONIZACIÓN
+        // =============================================
+        function updateSyncStatus(status) {
+            const indicator = document.getElementById('syncIndicator');
+            const statusText = document.getElementById('syncStatus');
+            
+            indicator.className = 'sync-indicator';
+            
+            switch(status) {
+                case 'connected':
+                    statusText.textContent = 'Conectado';
+                    break;
+                case 'syncing':
+                    indicator.classList.add('syncing');
+                    statusText.textContent = 'Sincronizando...';
+                    break;
+                case 'error':
+                    indicator.classList.add('error');
+                    statusText.textContent = 'Sin conexión';
+                    break;
+            }
+        }
+
+        function syncToFirebase() {
+            if (!isInitialized || isUpdatingFromFirebase) return;
+            
+            updateSyncStatus('syncing');
+            dataRef.set(data)
+                .then(() => {
+                    updateSyncStatus('connected');
+                })
+                .catch((error) => {
+                    console.error('Error al sincronizar:', error);
+                    updateSyncStatus('error');
+                });
+        }
+
+        function loadFromFirebase() {
+            if (!isInitialized) {
+                renderTable();
+                return;
+            }
+
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            dataRef.on('value', (snapshot) => {
+                isUpdatingFromFirebase = true;
+                const firebaseData = snapshot.val();
+                
+                if (firebaseData && Array.isArray(firebaseData)) {
+                    data = firebaseData;
+                } else if (data.length === 0) {
+                    // Si no hay datos en Firebase, usar datos iniciales
+                    data = getInitialData();
+                    syncToFirebase();
+                }
+                
+                renderTable();
+                document.getElementById('loadingOverlay').style.display = 'none';
+                updateSyncStatus('connected');
+                
+                setTimeout(() => {
+                    isUpdatingFromFirebase = false;
+                }, 500);
+            }, (error) => {
+                console.error('Error al cargar datos:', error);
+                updateSyncStatus('error');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                isUpdatingFromFirebase = false;
+            });
+        }
+
+        // =============================================
+        // DATOS INICIALES
+        // =============================================
+        function getInitialData() {
+            return [
+                {isIngredient: true, name: 'arroz', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'espaguetis al pesto', precioCompra: 3, precioVenta: '', precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'sapo', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Dragon blanco'},
+                {isIngredient: false, name: 'estrella galicia', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'limoncello', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'fernet', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Galaxy'},
+                {isIngredient: false, name: 'tequila', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'vodka', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: true, name: 'carne de cerdo', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
+                {isIngredient: false, name: 'pulpo a feira', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Ltd Navallon'}
+            ];
+        }
+
+        // =============================================
+        // FUNCIONES DE INTERFAZ
+        // =============================================
+        function updateStats() {
+            const total = data.length;
+            const ingredients = data.filter(item => item.isIngredient).length;
+            const products = total - ingredients;
+            
+            document.getElementById('totalItems').textContent = total;
+            document.getElementById('totalIngredients').textContent = ingredients;
+            document.getElementById('totalProducts').textContent = products;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const sortedData = [...data].sort((a, b) => {
+                const comercioA = a.comercio || 'Mercado';
+                const comercioB = b.comercio || 'Mercado';
+                
+                if (comercioA === 'Mercado' && comercioB !== 'Mercado') return -1;
+                if (comercioA !== 'Mercado' && comercioB === 'Mercado') return 1;
+                if (comercioA < comercioB) return -1;
+                if (comercioA > comercioB) return 1;
+                if (a.isIngredient && !b.isIngredient) return -1;
+                if (!a.isIngredient && b.isIngredient) return 1;
+                
+                return 0;
+            });
+            
+            sortedData.forEach((item) => {
+                const index = data.indexOf(item);
+                const row = document.createElement('tr');
+                row.className = item.isIngredient ? 'ingredient-row' : 'product-row';
+                
+                if (!item.comercio || item.comercio === 'Mercado') {
+                    row.style.borderLeft = '5px solid #f59e0b';
+                }
+                
+                row.innerHTML = `
+                    <td class="checkbox-cell">
+                        <div title="${item.isIngredient ? 'Es ingrediente' : 'Es producto'}">
+                            ${item.isIngredient ? '<span style="font-size: 24px;">🌿</span>' : '<span style="font-size: 24px;">📦</span>'}
+                        </div>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'name')">
+                        <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
+                            <span style="flex: 1;">${item.name}</span>
+                            <span class="edit-icon">✎</span>
+                        </div>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'comercio')">
+                        <span style="color: ${item.comercio ? (item.comercio === 'Mercado' ? '#f59e0b' : '#667eea') : '#999'}; font-weight: ${item.comercio ? '600' : '400'};">${item.comercio || 'Mercado'}</span>
+                        <span class="edit-icon">✎</span>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioCompra')">
+                        <span>${item.precioCompra}</span>
+                        <span class="edit-icon">✎</span>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioVenta')">
+                        <span>${item.precioVenta}</span>
+                        <span class="edit-icon">✎</span>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioVentaFinal')">
+                        <span>${item.precioVentaFinal}</span>
+                        <span class="edit-icon">✎</span>
+                    </td>
+                    <td class="editable-cell" onclick="editCell(this, ${index}, 'satisfaccion')">
+                        <span>${item.satisfaccion}${item.satisfaccion ? '%' : ''}</span>
+                        <span class="edit-icon">✎</span>
+                    </td>
+                    <td class="actions">
+                        <button class="btn-toggle" onclick="toggleIngredient(${index})" 
+                                style="background: ${item.isIngredient ? 'linear-gradient(135deg, #8b5cf6, #7c3aed)' : 'linear-gradient(135deg, #10b981, #059669)'};">
+                            <span style="position: relative; z-index: 1;">${item.isIngredient ? '📦 Hacer Producto' : '🌿 Hacer Ingrediente'}</span>
+                        </button>
+                        <button class="btn-delete" onclick="deleteRow(${index})">
+                            <span style="position: relative; z-index: 1;">🗑️ Eliminar</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            updateStats();
+        }
+
+        function editCell(cell, index, field) {
+            if (cell.querySelector('input')) return;
+            
+            const currentValue = data[index][field];
+            const spans = cell.querySelectorAll('span');
+            const valueSpan = field === 'name' ? spans[spans.length - 2] : spans[0];
+            
+            const input = document.createElement('input');
+            input.type = field === 'name' || field === 'comercio' ? 'text' : 'number';
+            input.value = currentValue || '';
+            input.onblur = function() {
+                const newValue = this.value.trim();
+                data[index][field] = (field === 'name' || field === 'comercio') ? newValue : (newValue || '');
+                syncToFirebase();
+                renderTable();
+            };
+            input.onkeypress = function(e) {
+                if (e.key === 'Enter') {
+                    this.blur();
+                }
+            };
+            
+            valueSpan.replaceWith(input);
+            const editIcon = cell.querySelector('.edit-icon');
+            if (editIcon) editIcon.style.display = 'none';
+            input.focus();
+        }
+
+        function toggleIngredient(index) {
+            data[index].isIngredient = !data[index].isIngredient;
+            syncToFirebase();
+            renderTable();
+        }
+
+        function deleteRow(index) {
+            if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
+                data.splice(index, 1);
+                syncToFirebase();
+                renderTable();
+            }
+        }
+
+        function addNewRow() {
+            data.unshift({
+                isIngredient: false,
+                name: 'Nuevo Item',
+                precioCompra: 0,
+                precioVenta: 0,
+                precioVentaFinal: 0,
+                satisfaccion: 0,
+                comercio: ''
+            });
+            syncToFirebase();
+            renderTable();
+        }
+
+        function filterTable() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.getElementById('tableBody').getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const name = row.cells[1].textContent.toLowerCase();
+                row.style.display = name.includes(searchValue) ? '' : 'none';
+            }
+        }
+
+        function downloadJSON() {
+            const jsonData = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `negocios_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function loadJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const loadedData = JSON.parse(e.target.result);
+                    
+                    if (!Array.isArray(loadedData)) {
+                        alert('❌ El archivo JSON debe contener un array de items');
+                        return;
+                    }
+                    
+                    const isValid = loadedData.every(item => 
+                        typeof item.isIngredient === 'boolean' &&
+                        typeof item.name === 'string'
+                    );
+                    
+                    if (!isValid) {
+                        alert('❌ El formato del JSON no es válido');
+                        return;
+                    }
+                    
+                    loadedData.forEach(item => {
+                        if (item.precioVentaFinal === undefined) item.precioVentaFinal = '';
+                        if (item.satisfaccion === undefined) item.satisfaccion = '';
+                        if (item.comercio === undefined) item.comercio = '';
+                    });
+                    
+                    data.length = 0;
+                    data.push(...loadedData);
+                    syncToFirebase();
+                    renderTable();
+                    
+                    alert('✅ Datos cargados y sincronizados correctamente!');
+                } catch (error) {
+                    alert('❌ Error al leer el archivo JSON: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // =============================================
+        // INICIALIZACIÓN
+        // =============================================
+        window.addEventListener('load', () => {
+            loadFromFirebase();
+        });
+    </script>
+</body>
+</html>
