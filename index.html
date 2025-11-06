@@ -861,7 +861,7 @@
         /* === BOTONES PEQUEÑOS COMPACTOS === */
 
         .btn-small {
-            padding: 6px 14px;
+            padding: 3px 8px;
             font-size: 11px;
             border: none;
             border-radius: 10px;
@@ -920,6 +920,76 @@
             transform: translateY(-2px);
             box-shadow: 0 7px 18px rgba(239,68,68,0.35);
         }
+        .comercio-card {
+              background: #f8f9fa;
+              padding: 12px 18px;
+              border-radius: 12px;
+              margin-bottom: 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              transition: .25s;
+        }
+        /* azul suave */
+        .comercio-card.color-1 { background: #e0f2fe; } 
+        /* verde suave */
+        .comercio-card.color-2 { background: #e0f7ec; } 
+        /* amarillo suave */
+        .comercio-card.color-3 { background: #fff3cd; } 
+        /* violeta suave */
+        .comercio-card.color-4 { background: #f3e8ff; } 
+        /* 1 — Azul cielo */
+        .comercio-card.color-1 { background: #e0f2fe; }
+            
+        /* 2 — Verde menta */
+        .comercio-card.color-2 { background: #e0f7ec; }
+            
+        /* 3 — Amarillo limón suave */
+        .comercio-card.color-3 { background: #fff9c4; }
+            
+        /* 4 — Lavanda */
+        .comercio-card.color-4 { background: #f3e8ff; }
+            
+        /* 5 — Rosa pastel */
+        .comercio-card.color-5 { background: #ffe4f0; }
+            
+        /* 6 — Durazno pastel */
+        .comercio-card.color-6 { background: #ffedd5; }
+            
+        /* 7 — Turquesa hielo */
+        .comercio-card.color-7 { background: #dffcfb; }
+            
+        /* 8 — Gris perlado */
+        .comercio-card.color-8 { background: #f1f5f9; }
+            
+        /* 9 — Verde manzana suave */
+        .comercio-card.color-9 { background: #ecfccb; }
+            
+        /* 10 — Azul lavanda grisáceo */
+        .comercio-card.color-10 { background: #e2e8f0; }
+            
+        /* 11 — Coral pastel */
+        .comercio-card.color-11 { background: #ffe8e6; }
+            
+        /* 12 — Celeste pastel */
+        .comercio-card.color-12 { background: #def7ff; }
+            
+        /* 13 — Amarillo arena */
+        .comercio-card.color-13 { background: #fef5d7; }
+            
+        /* 14 — Verde bosque suave */
+        .comercio-card.color-14 { background: #e8f5e9; }
+            
+        /* 15 — Lila rosado */
+        .comercio-card.color-15 { background: #fce7ff; }
+
+
+        .comercio-card:hover {
+            transform: translateX(6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
 
         @media (max-width: 768px) {
             body {
@@ -952,16 +1022,6 @@
                 left: auto;
                 right: auto;
                 margin: 10px auto;
-            }
-            .comercio-card {
-                background: #f8f9fa;
-                padding: 15px 20px;
-                border-radius: 12px;
-                margin-bottom: 10px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
             }
 
             .comercio-actions {
@@ -1391,22 +1451,30 @@ async function saveNewComercio() {
             const list = document.getElementById('comerciosList');
             list.innerHTML = '';
         
-            Object.keys(USERS).forEach(username => {
-                if (username === 'admin') return;
-            
-                const u = USERS[username];
-            
-                list.innerHTML += `
-                    <div class="comercio-card">
-                        <strong style="font-size: 18px;">${u.icon} ${username}</strong>
-                        <div class="comercio-actions">
-                            <button class="btn-small btn-small-edit" onclick="changeComercioPassword('${username}')">🔐 Cambiar Contraseña</button>
-                            <button class="btn-small btn-small-delete" onclick="deleteComercio('${username}')">🗑️ Eliminar</button>
-                        </div>
-                    </div>
-                `;
+            function colorClassFor(name) {
+                let hash = 0;
+                for (const ch of name) {
+                    hash = (hash + ch.charCodeAt(0)) % 15; 
+                }
+                return `color-${hash + 1}`; 
+            }
 
+            Object.keys(USERS).forEach((username) => {
+              if (username === 'admin') return;
+              const u = USERS[username];
+              const colorClass = colorClassFor(username);
+            
+              list.innerHTML += `
+                <div class="comercio-card ${colorClass}">
+                  <strong style="font-size: 18px;">${u.icon} ${username}</strong>
+                  <div class="comercio-actions">
+                    <button class="btn-small btn-small-edit" onclick="changeComercioPassword('${username}')">🔐 Cambiar Contraseña</button>
+                    <button class="btn-small btn-small-delete" onclick="deleteComercio('${username}')">🗑️ Eliminar</button>
+                  </div>
+                </div>
+              `;
             });
+
         
             modal.classList.add("show");
         }
