@@ -718,10 +718,12 @@
             background: rgba(0,0,0,0.7);
             display: none;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* ⬅️ ARRIBA, no centrado */
+            padding-top: 40px;       /* ⬅️ separación desde arriba */
             z-index: 10001;
             backdrop-filter: blur(5px);
         }
+
 
         .modal-overlay.show {
             display: flex;
@@ -856,6 +858,69 @@
             background: rgba(102, 126, 234, 0.1);
         }
         
+        /* === BOTONES PEQUEÑOS COMPACTOS === */
+
+        .btn-small {
+            padding: 6px 14px;
+            font-size: 11px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Efecto onda */
+        .btn-small::before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 50%;
+            left: 50%;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width .45s ease, height .45s ease;
+        }
+
+        .btn-small:hover::before {
+            width: 180px;
+            height: 180px;
+        }
+
+        /* 🔵 Cambiar contraseña */
+        .btn-small-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+
+        .btn-small-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(59,130,246,0.35);
+        }
+
+        /* 🔴 Eliminar */
+        .btn-small-delete {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+
+        .btn-small-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(239,68,68,0.35);
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -888,6 +953,38 @@
                 right: auto;
                 margin: 10px auto;
             }
+            .comercio-card {
+                background: #f8f9fa;
+                padding: 15px 20px;
+                border-radius: 12px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .comercio-actions {
+                display: flex;
+                gap: 10px;
+            }
+
+            #manageComerciosModal .modal-content {
+                max-height: 80vh;        /* Altura máxima visible */
+                overflow-y: auto;        /* Scroll interno */
+            }
+
+            #comerciosList {
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            #manageComerciosModal .modal-content {
+                margin-top: 10px !important;
+            }
+
+
         }
     </style>
 </head>
@@ -963,6 +1060,11 @@
                         <span class="emoji-option" data-emoji="💎">💎</span>
                         <span class="emoji-option" data-emoji="👑">👑</span>
                         <span class="emoji-option" data-emoji="🔥">🔥</span>
+                        <span class="emoji-option" data-emoji="🍺">🍺</span>
+                        <span class="emoji-option" data-emoji="📊">📊</span>
+                        <span class="emoji-option" data-emoji="🔍">🔍</span>
+                        <span class="emoji-option" data-emoji="🗂️">🗂️</span>
+
                     </div>
                 </div>
                 <div class="modal-buttons">
@@ -1009,6 +1111,9 @@
                 <button class="btn btn-add" onclick="showAddComercioModal()" id="btnAddComercio" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                     <span style="position: relative; z-index: 1;">🏪 Agregar Comercio</span>
                 </button>
+                <button class="btn btn-add" onclick="showManageComerciosModal()" id="btnManageComercios" style="background: linear-gradient(135deg, #3b82f6, #1e40af);">
+                    <span style="position: relative; z-index: 1;">👥 Gestionar Comercios</span>
+                </button>
                 <button class="btn btn-download" onclick="downloadJSON()">
                     <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
                 </button>
@@ -1020,6 +1125,17 @@
                     <input type="text" id="searchInput" placeholder="Buscar por nombre..." onkeyup="filterTable()">
                 </div>
             </div>
+            <!-- MODAL PARA GESTIONAR COMERCIOS -->
+                <div class="modal-overlay" id="manageComerciosModal">
+                <div class="modal-content" style="max-width: 600px;">
+                    <h3>👥 Gestionar Comercios</h3>
+                    <div id="comerciosList"></div>
+
+                <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="closeManageComerciosModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
             
             <div class="table-container">
                 <table id="negociosTable">
@@ -1090,7 +1206,7 @@
             'Club 77': {
                 password: 'bc6669784c3e0369a5b79dda93aab9ed34bd1407a1e4b749014dc0961c431716', // lsnclub77
                 role: 'comercio',
-                icon: '👑',
+                icon: '🍺',
                 comercio: 'Club 77'
             },
             'Botanic Club': {
@@ -1211,59 +1327,129 @@
             });
         });
 
-        async function saveNewComercio() {
-            const name = document.getElementById('newComercioName').value.trim();
-            const password = document.getElementById('newComercioPassword').value;
-            const passwordConfirm = document.getElementById('newComercioPasswordConfirm').value;
+async function saveNewComercio() {
+    const name = document.getElementById('newComercioName').value.trim();
+    const password = document.getElementById('newComercioPassword').value;
+    const passwordConfirm = document.getElementById('newComercioPasswordConfirm').value;
 
-            if (!name) {
-                alert('❌ Por favor ingresa el nombre del comercio');
-                return;
-            }
+    if (!name) {
+        alert('❌ Por favor ingresa el nombre del comercio');
+        return;
+    }
 
-            if (USERS[name]) {
-                alert('❌ Ya existe un comercio con ese nombre');
-                return;
-            }
+    if (USERS[name]) {
+        alert('❌ Ya existe un comercio con ese nombre');
+        return;
+    }
 
-            if (password.length < 8) {
-                alert('❌ La contraseña debe tener al menos 8 caracteres');
-                return;
-            }
+    if (password.length < 8) {
+        alert('❌ La contraseña debe tener al menos 8 caracteres');
+        return;
+    }
 
-            if (password !== passwordConfirm) {
-                alert('❌ Las contraseñas no coinciden');
-                return;
-            }
+    if (password !== passwordConfirm) {
+        alert('❌ Las contraseñas no coinciden');
+        return;
+    }
 
-            const passwordHash = await sha256(password);
+    const passwordHash = await sha256(password);
 
-            USERS[name] = {
-                password: passwordHash,
-                role: 'comercio',
-                icon: selectedEmoji,
-                comercio: name
-            };
+    USERS[name] = {
+        password: passwordHash,
+        role: 'comercio',
+        icon: selectedEmoji,
+        comercio: name
+    };
 
-            // Guardar en Firebase
-            if (isInitialized) {
-                usersRef.set(USERS)
-                    .then(() => {
-                        alert(`✅ Comercio "${name}" agregado correctamente!\n\nUsuario: ${name}\nContraseña: ${password}\n\n⚠️ Guarda esta información, no se mostrará de nuevo.`);
-                        closeAddComercioModal();
-                        updateUserSelect();
-                    })
-                    .catch((error) => {
-                        console.error('Error al guardar comercio:', error);
-                        alert('❌ Error al guardar el comercio en Firebase');
-                    });
-            } else {
+    // Guardar en Firebase
+    if (isInitialized) {
+        usersRef.set(USERS)
+            .then(() => {
                 alert(`✅ Comercio "${name}" agregado correctamente!\n\nUsuario: ${name}\nContraseña: ${password}\n\n⚠️ Guarda esta información, no se mostrará de nuevo.`);
                 closeAddComercioModal();
                 updateUserSelect();
-            }
-        }
+            })
+            .catch((error) => {
+                console.error('Error al guardar comercio:', error);
+                alert('❌ Error al guardar el comercio en Firebase');
+            });
+    } else {
+        alert(`✅ Comercio "${name}" agregado correctamente!\n\nUsuario: ${name}\nContraseña: ${password}\n\n⚠️ Guarda esta información, no se mostrará de nuevo.`);
+        closeAddComercioModal();
+        updateUserSelect();
+    }
+}
 
+        //////////////////////////////////////////////////////////
+        // ✅✅ BLOQUE NUEVO: GESTIONAR COMERCIOS (ADMIN)
+        //////////////////////////////////////////////////////////
+        
+        function showManageComerciosModal() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+        
+            const modal = document.getElementById('manageComerciosModal');
+            const list = document.getElementById('comerciosList');
+            list.innerHTML = '';
+        
+            Object.keys(USERS).forEach(username => {
+                if (username === 'admin') return;
+            
+                const u = USERS[username];
+            
+                list.innerHTML += `
+                    <div class="comercio-card">
+                        <strong style="font-size: 18px;">${u.icon} ${username}</strong>
+                        <div class="comercio-actions">
+                            <button class="btn-small btn-small-edit" onclick="changeComercioPassword('${username}')">🔐 Cambiar Contraseña</button>
+                            <button class="btn-small btn-small-delete" onclick="deleteComercio('${username}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                `;
+
+            });
+        
+            modal.classList.add("show");
+        }
+        
+        function closeManageComerciosModal() {
+            document.getElementById('manageComerciosModal').classList.remove("show");
+        }
+        
+        // ✅ Cambiar contraseña
+        async function changeComercioPassword(username) {
+            const newPass = prompt(`Nueva contraseña para "${username}":`);
+        
+            if (!newPass || newPass.length < 8) {
+                alert("❌ La contraseña debe tener mínimo 8 caracteres");
+                return;
+            }
+        
+            const hash = await sha256(newPass);
+            USERS[username].password = hash;
+        
+            if (isInitialized) usersRef.set(USERS);
+        
+            alert(`✅ Contraseña de "${username}" actualizada.\nNueva contraseña: ${newPass}`);
+        }
+        
+        // ✅ Eliminar comercio
+        function deleteComercio(username) {
+            if (!confirm(`⚠️ ¿Seguro que quieres eliminar el comercio "${username}"?`)) return;
+        
+            delete USERS[username];
+        
+            if (isInitialized) usersRef.set(USERS);
+        
+            updateUserSelect();
+            showManageComerciosModal();
+        
+            alert(`✅ Comercio "${username}" eliminado.`);
+        }
+        
+        //////////////////////////////////////////////////////////
+        // ✅✅ FIN DEL BLOQUE NUEVO
+        //////////////////////////////////////////////////////////
+        
         function updateUserSelect() {
             const userSelect = document.getElementById('userSelect');
             const currentValue = userSelect.value;
@@ -1282,6 +1468,21 @@
                 userSelect.value = currentValue;
             }
         }
+        
+        function loadUsersFromFirebase() {
+            if (!isInitialized) return;
+        
+            usersRef.once('value', (snapshot) => {
+                const firebaseUsers = snapshot.val();
+                if (firebaseUsers) {
+                    USERS = firebaseUsers;
+                    updateUserSelect();
+                } else {
+                    usersRef.set(USERS);
+                }
+            });
+        }
+
 
         function loadUsersFromFirebase() {
             if (!isInitialized) return;
