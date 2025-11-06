@@ -707,6 +707,154 @@
             letter-spacing: 0.5px;
             margin-left: 10px;
         }
+
+        /* ===== MODAL PARA AGREGAR COMERCIO ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content h3 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-btn-save {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .modal-btn-cancel {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4);
+        }
+
+        .emoji-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .emoji-option {
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-option:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        .emoji-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
         
         @media (max-width: 768px) {
             body {
@@ -760,7 +908,6 @@
                     <option value="Dragon blanco">🐉 Dragon blanco</option>
                     <option value="Galaxy">🌌 Galaxy</option>
                     <option value="Ltd Navallon">🏢 Ltd Navallon</option>
-                    <option value="PaganiKing">👑 PaganiKing</option>
                 </select>
             </div>
             
@@ -777,6 +924,50 @@
     <div class="main-content" id="mainContent">
         <div id="loadingOverlay" class="loading-overlay" style="display: none;">
             <div class="loading-spinner"></div>
+        </div>
+
+        <!-- MODAL PARA AGREGAR COMERCIO -->
+        <div class="modal-overlay" id="addComercioModal">
+            <div class="modal-content">
+                <h3>🏪 Agregar Nuevo Comercio</h3>
+                <div class="form-group">
+                    <label>Nombre del Comercio:</label>
+                    <input type="text" id="newComercioName" placeholder="Ej: Restaurante Los Amigos">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="newComercioPassword" placeholder="Mínimo 8 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña:</label>
+                    <input type="password" id="newComercioPasswordConfirm" placeholder="Repite la contraseña">
+                </div>
+                <div class="form-group">
+                    <label>Selecciona un Icono:</label>
+                    <div class="emoji-selector" id="emojiSelector">
+                        <span class="emoji-option" data-emoji="🍔">🍔</span>
+                        <span class="emoji-option" data-emoji="🍕">🍕</span>
+                        <span class="emoji-option" data-emoji="🍣">🍣</span>
+                        <span class="emoji-option" data-emoji="🍜">🍜</span>
+                        <span class="emoji-option" data-emoji="🍰">🍰</span>
+                        <span class="emoji-option" data-emoji="☕">☕</span>
+                        <span class="emoji-option" data-emoji="🍺">🍺</span>
+                        <span class="emoji-option" data-emoji="🏪">🏪</span>
+                        <span class="emoji-option" data-emoji="🏢">🏢</span>
+                        <span class="emoji-option" data-emoji="🏬">🏬</span>
+                        <span class="emoji-option" data-emoji="🎪">🎪</span>
+                        <span class="emoji-option" data-emoji="🎭">🎭</span>
+                        <span class="emoji-option" data-emoji="🌟">🌟</span>
+                        <span class="emoji-option" data-emoji="💎">💎</span>
+                        <span class="emoji-option" data-emoji="👑">👑</span>
+                        <span class="emoji-option" data-emoji="🔥">🔥</span>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" onclick="closeAddComercioModal()">Cancelar</button>
+                    <button class="modal-btn modal-btn-save" onclick="saveNewComercio()">Guardar</button>
+                </div>
+            </div>
         </div>
 
         <div class="container">
@@ -812,6 +1003,9 @@
             <div class="controls" id="controlsDiv">
                 <button class="btn btn-add" onclick="addNewRow()" id="btnAdd">
                     <span style="position: relative; z-index: 1;">➕ Agregar Item</span>
+                </button>
+                <button class="btn btn-add" onclick="showAddComercioModal()" id="btnAddComercio" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                    <span style="position: relative; z-index: 1;">🏪 Agregar Comercio</span>
                 </button>
                 <button class="btn btn-download" onclick="downloadJSON()">
                     <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
@@ -854,7 +1048,7 @@
         // =============================================
         // SISTEMA DE USUARIOS Y CONTRASEÑAS
         // =============================================
-        const USERS = {
+        let USERS = {
             'admin': {
                 password: '7d5866c6af1142ba783411bef8b0ccab65993ac217285a7ab6203f58fa0a5de1', // lsnadmin2025
                 role: 'admin',
@@ -863,7 +1057,7 @@
             },
             'Mercado': {
                 password: '05c5e6723dd93e45d6eff77ed6673bd60730b9a243066dc5af498b192449588a', // lsnmercado2025
-                role: 'comercio',
+                role: 'mercado',
                 icon: '🛒',
                 comercio: 'Mercado'
             },
@@ -958,14 +1152,142 @@
             document.getElementById('userIcon').textContent = currentUser.icon;
             document.getElementById('userName').textContent = currentUser.username;
 
-            if (currentUser.role === 'comercio') {
+            const btnAddComercio = document.getElementById('btnAddComercio');
+            
+            if (currentUser.role === 'comercio' || currentUser.role === 'mercado') {
                 document.getElementById('headerSubtitle').textContent = 'Consulta de Precios - Solo Lectura';
                 document.getElementById('btnAdd').style.display = 'none';
                 document.getElementById('btnUpload').style.display = 'none';
+                if (btnAddComercio) btnAddComercio.style.display = 'none';
                 document.getElementById('actionsHeader').textContent = '';
             } else {
                 document.getElementById('headerSubtitle').textContent = 'Gestión Inteligente de Precios - Sincronizado en Tiempo Real';
+                if (btnAddComercio) btnAddComercio.style.display = 'inline-block';
             }
+        }
+
+        // =============================================
+        // GESTIÓN DE COMERCIOS
+        // =============================================
+        let selectedEmoji = '🏪';
+
+        function showAddComercioModal() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            document.getElementById('addComercioModal').classList.add('show');
+            document.getElementById('newComercioName').value = '';
+            document.getElementById('newComercioPassword').value = '';
+            document.getElementById('newComercioPasswordConfirm').value = '';
+            selectedEmoji = '🏪';
+            updateEmojiSelection();
+        }
+
+        function closeAddComercioModal() {
+            document.getElementById('addComercioModal').classList.remove('show');
+        }
+
+        function updateEmojiSelection() {
+            document.querySelectorAll('.emoji-option').forEach(emoji => {
+                emoji.classList.remove('selected');
+                if (emoji.dataset.emoji === selectedEmoji) {
+                    emoji.classList.add('selected');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.emoji-option').forEach(emoji => {
+                emoji.addEventListener('click', function() {
+                    selectedEmoji = this.dataset.emoji;
+                    updateEmojiSelection();
+                });
+            });
+        });
+
+        async function saveNewComercio() {
+            const name = document.getElementById('newComercioName').value.trim();
+            const password = document.getElementById('newComercioPassword').value;
+            const passwordConfirm = document.getElementById('newComercioPasswordConfirm').value;
+
+            if (!name) {
+                alert('❌ Por favor ingresa el nombre del comercio');
+                return;
+            }
+
+            if (USERS[name]) {
+                alert('❌ Ya existe un comercio con ese nombre');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('❌ La contraseña debe tener al menos 8 caracteres');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                alert('❌ Las contraseñas no coinciden');
+                return;
+            }
+
+            const passwordHash = await sha256(password);
+
+            USERS[name] = {
+                password: passwordHash,
+                role: 'comercio',
+                icon: selectedEmoji,
+                comercio: name
+            };
+
+            // Guardar en Firebase
+            if (isInitialized) {
+                usersRef.set(USERS)
+                    .then(() => {
+                        alert(`✅ Comercio "${name}" agregado correctamente!\n\nUsuario: ${name}\nContraseña: ${password}\n\n⚠️ Guarda esta información, no se mostrará de nuevo.`);
+                        closeAddComercioModal();
+                        updateUserSelect();
+                    })
+                    .catch((error) => {
+                        console.error('Error al guardar comercio:', error);
+                        alert('❌ Error al guardar el comercio en Firebase');
+                    });
+            } else {
+                alert(`✅ Comercio "${name}" agregado correctamente!\n\nUsuario: ${name}\nContraseña: ${password}\n\n⚠️ Guarda esta información, no se mostrará de nuevo.`);
+                closeAddComercioModal();
+                updateUserSelect();
+            }
+        }
+
+        function updateUserSelect() {
+            const userSelect = document.getElementById('userSelect');
+            const currentValue = userSelect.value;
+            
+            userSelect.innerHTML = '<option value="">-- Selecciona tu comercio --</option>';
+            userSelect.innerHTML += '<option value="admin">🔧 Administrador</option>';
+            
+            Object.keys(USERS).forEach(username => {
+                if (username !== 'admin') {
+                    const user = USERS[username];
+                    userSelect.innerHTML += `<option value="${username}">${user.icon} ${username}</option>`;
+                }
+            });
+            
+            if (currentValue) {
+                userSelect.value = currentValue;
+            }
+        }
+
+        function loadUsersFromFirebase() {
+            if (!isInitialized) return;
+
+            usersRef.once('value', (snapshot) => {
+                const firebaseUsers = snapshot.val();
+                if (firebaseUsers) {
+                    USERS = firebaseUsers;
+                    updateUserSelect();
+                } else {
+                    // Si no hay usuarios en Firebase, guardar los locales
+                    usersRef.set(USERS);
+                }
+            });
         }
 
         function logout() {
@@ -998,25 +1320,28 @@
         // CONFIGURACIÓN DE FIREBASE
         // =============================================
         const firebaseConfig = {
-          apiKey: "AIzaSyDbiCuTAjboFuk_If3EOFnk3sglmAzFlY4",
-          authDomain: "negocios-lsn.firebaseapp.com",
-          databaseURL: "https://negocios-lsn-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "negocios-lsn",
-          storageBucket: "negocios-lsn.firebasestorage.app",
-          messagingSenderId: "221131910029",
-          appId: "1:221131910029:web:ab643f05717d0f19ebebc4"
+            apiKey: "AIzaSyDbiCuTAjboFuk_If3EOFnk3sglmAzFlY4",
+            authDomain: "negocios-lsn.firebaseapp.com",
+            databaseURL: "https://negocios-lsn-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "negocios-lsn",
+            storageBucket: "negocios-lsn.firebasestorage.app",
+            messagingSenderId: "221131910029",
+            appId: "1:221131910029:web:ab643f05717d0f19ebebc4"
         };
 
         let database;
         let dataRef;
+        let usersRef;
         let isInitialized = false;
 
         try {
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
             dataRef = database.ref('negocios');
+            usersRef = database.ref('usuarios');
             isInitialized = true;
             updateSyncStatus('connected');
+            loadUsersFromFirebase();
         } catch (error) {
             console.error('Error al inicializar Firebase:', error);
             updateSyncStatus('error');
@@ -1053,7 +1378,7 @@
 
         function syncToFirebase() {
             if (!isInitialized || isUpdatingFromFirebase) return;
-            if (currentUser && currentUser.role === 'comercio') return; // Los comercios no pueden sincronizar
+            if (currentUser && (currentUser.role === 'comercio' || currentUser.role === 'mercado')) return; // Los comercios y mercado no pueden sincronizar
             
             updateSyncStatus('syncing');
             dataRef.set(data)
@@ -1144,12 +1469,15 @@
         function canEditItem(item) {
             if (!currentUser) return false;
             if (currentUser.role === 'admin') return true;
-            return false; // Los comercios no pueden editar nada
+            return false; // Los comercios y mercado no pueden editar
         }
 
         function shouldShowItem(item) {
             if (!currentUser) return true;
             if (currentUser.role === 'admin') return true;
+            
+            // Mercado ve TODOS los items
+            if (currentUser.role === 'mercado') return true;
             
             // Los comercios ven items sin comercio (Mercado) o sus propios items
             return !item.comercio || item.comercio === '' || item.comercio === 'Mercado' || item.comercio === currentUser.comercio;
@@ -1310,7 +1638,7 @@
 
         function downloadJSON() {
             let exportData = data;
-            if (currentUser && currentUser.role === 'comercio') {
+            if (currentUser && (currentUser.role === 'comercio' || currentUser.role === 'mercado')) {
                 exportData = data.filter(item => shouldShowItem(item));
             }
             
