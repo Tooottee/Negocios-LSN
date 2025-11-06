@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -98,6 +97,28 @@
             margin-bottom: 20px;
         }
 
+        .user-select {
+            margin-bottom: 25px;
+        }
+
+        .user-select select {
+            width: 100%;
+            padding: 18px 25px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+            cursor: pointer;
+        }
+
+        .user-select select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
         .password-input-wrapper {
             position: relative;
             margin-bottom: 30px;
@@ -165,7 +186,7 @@
             75% { transform: translateX(10px); }
         }
         
-        /* ===== CONTENIDO PRINCIPAL (OCULTO INICIALMENTE) ===== */
+        /* ===== CONTENIDO PRINCIPAL ===== */
         .main-content {
             display: none;
         }
@@ -234,7 +255,7 @@
             z-index: 1;
         }
         
-        .sync-status {
+        .user-badge {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -246,6 +267,7 @@
             align-items: center;
             gap: 8px;
             z-index: 2;
+            font-weight: 600;
         }
 
         .logout-btn {
@@ -268,6 +290,20 @@
         .logout-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: scale(1.05);
+        }
+        
+        .sync-status {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
         }
         
         .sync-indicator {
@@ -372,6 +408,12 @@
         .btn-upload:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
         
         .search-box {
@@ -493,6 +535,14 @@
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
         }
         
+        .editable-cell.readonly {
+            cursor: default;
+        }
+
+        .editable-cell.readonly:hover {
+            background: transparent;
+        }
+        
         .editable-cell input {
             width: 100%;
             padding: 12px 16px;
@@ -526,6 +576,10 @@
         
         .editable-cell:hover .edit-icon {
             opacity: 1;
+        }
+
+        .editable-cell.readonly .edit-icon {
+            display: none;
         }
         
         .checkbox-cell {
@@ -640,6 +694,19 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .readonly-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 10px;
+        }
         
         @media (max-width: 768px) {
             body {
@@ -665,6 +732,14 @@
             .login-box h2 {
                 font-size: 2em;
             }
+
+            .user-badge, .logout-btn, .sync-status {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin: 10px auto;
+            }
         }
     </style>
 </head>
@@ -673,13 +748,28 @@
     <div class="login-container" id="loginContainer">
         <div class="login-box">
             <div class="lock-icon">🔒</div>
-            <h2>Acceso Restringido</h2>
-            <p>Ingresa la contraseña para continuar</p>
+            <h2>Acceso al Sistema</h2>
+            <p>Selecciona tu comercio e ingresa tu contraseña</p>
+            
+            <div class="user-select">
+                <select id="userSelect">
+                    <option value="">-- Selecciona tu comercio --</option>
+                    <option value="admin">🔧 Administrador</option>
+                    <option value="Mercado">🛒 Mercado</option>
+                    <option value="Angelos">🍕 Angelos</option>
+                    <option value="Dragon blanco">🐉 Dragon blanco</option>
+                    <option value="Galaxy">🌌 Galaxy</option>
+                    <option value="Ltd Navallon">🏢 Ltd Navallon</option>
+                    <option value="PaganiKing">👑 PaganiKing</option>
+                </select>
+            </div>
+            
             <div class="password-input-wrapper">
                 <input type="password" id="passwordInput" placeholder="Contraseña" autocomplete="off">
             </div>
+            
             <button class="login-btn" onclick="checkPassword()">Acceder</button>
-            <div class="error-message" id="errorMessage">❌ Contraseña incorrecta</div>
+            <div class="error-message" id="errorMessage">❌ Usuario o contraseña incorrectos</div>
         </div>
     </div>
 
@@ -692,12 +782,16 @@
         <div class="container">
             <div class="header">
                 <button class="logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
+                <div class="user-badge">
+                    <span id="userIcon">👤</span>
+                    <span id="userName">Usuario</span>
+                </div>
                 <div class="sync-status">
                     <div class="sync-indicator" id="syncIndicator"></div>
                     <span id="syncStatus">Conectado</span>
                 </div>
                 <h1>💼 NEGOCIOS</h1>
-                <p>Gestión Inteligente de Precios - Sincronizado en Tiempo Real</p>
+                <p id="headerSubtitle">Gestión Inteligente de Precios</p>
             </div>
             
             <div class="stats">
@@ -715,14 +809,14 @@
                 </div>
             </div>
             
-            <div class="controls">
-                <button class="btn btn-add" onclick="addNewRow()">
+            <div class="controls" id="controlsDiv">
+                <button class="btn btn-add" onclick="addNewRow()" id="btnAdd">
                     <span style="position: relative; z-index: 1;">➕ Agregar Item</span>
                 </button>
                 <button class="btn btn-download" onclick="downloadJSON()">
                     <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
                 </button>
-                <button class="btn btn-upload" onclick="document.getElementById('fileInput').click()">
+                <button class="btn btn-upload" onclick="document.getElementById('fileInput').click()" id="btnUpload">
                     <span style="position: relative; z-index: 1;">📂 Cargar JSON</span>
                 </button>
                 <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadJSON(event)">
@@ -742,7 +836,7 @@
                             <th>PRECIO VENTA (LOCALES)</th>
                             <th>PRECIO VENTA (FINAL)</th>
                             <th>% SATISFACCIÓN (+ 🍕/💧)</th>
-                            <th>ACCIONES</th>
+                            <th id="actionsHeader">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -758,11 +852,54 @@
 
     <script>
         // =============================================
-        // SISTEMA DE AUTENTICACIÓN
+        // SISTEMA DE USUARIOS Y CONTRASEÑAS
         // =============================================
-        // Hash SHA-256 de la contraseña: "lsnadmin2025"
-        // Para cambiar la contraseña, genera un nuevo hash en: https://emn178.github.io/online-tools/sha256.html
-        const PASSWORD_HASH = "7d5866c6af1142ba783411bef8b0ccab65993ac217285a7ab6203f58fa0a5de1";
+        const USERS = {
+            'admin': {
+                password: '7d5866c6af1142ba783411bef8b0ccab65993ac217285a7ab6203f58fa0a5de1', // lsnadmin2025
+                role: 'admin',
+                icon: '🔧',
+                comercio: null
+            },
+            'Mercado': {
+                password: '05c5e6723dd93e45d6eff77ed6673bd60730b9a243066dc5af498b192449588a', // lsnmercado2025
+                role: 'comercio',
+                icon: '🛒',
+                comercio: 'Mercado'
+            },
+            'Angelos': {
+                password: 'e126fa76ebf128685857b5da9f10b04ffdb426be3af82f0be108897bec39db14', // lsnangelos
+                role: 'comercio',
+                icon: '🍕',
+                comercio: 'Angelos'
+            },
+            'Dragon blanco': {
+                password: 'bbfe18dfcf5149d660eea8aca7567e5c39773848d7125435e521a04fc27b383f', // dragonblancolsn2025
+                role: 'comercio',
+                icon: '🐉',
+                comercio: 'Dragon blanco'
+            },
+            'Galaxy': {
+                password: 'dfb0d73eb3eb76aaa95caa1730b996ab096024aa5a1e19869e787313f9192c69', // lsngalaxy2025
+                role: 'comercio',
+                icon: '🌌',
+                comercio: 'Galaxy'
+            },
+            'Ltd Navallon': {
+                password: '616f50e2dd3d10ca3f040123607eed4e537ef43b665fd87415706160edd85e89', // ltdnavallon2025
+                role: 'comercio',
+                icon: '🏢',
+                comercio: 'Ltd Navallon'
+            },
+            'PaganiKing': {
+                password: 'd5fccba68dee33bede99bee7a55365d014864f81485fead1f585aa8218bc4f94', // lsnpaganiking2025
+                role: 'comercio',
+                icon: '👑',
+                comercio: 'PaganiKing'
+            }
+        };
+
+        let currentUser = null;
 
         async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message);
@@ -773,26 +910,38 @@
         }
 
         async function checkPassword() {
+            const userSelect = document.getElementById('userSelect');
             const passwordInput = document.getElementById('passwordInput');
+            const selectedUser = userSelect.value;
             const password = passwordInput.value;
             const errorMessage = document.getElementById('errorMessage');
 
-            if (!password) {
+            if (!selectedUser || !password) {
+                errorMessage.textContent = '❌ Selecciona un comercio e ingresa tu contraseña';
                 errorMessage.classList.add('show');
                 setTimeout(() => errorMessage.classList.remove('show'), 3000);
                 return;
             }
 
             const hash = await sha256(password);
+            const user = USERS[selectedUser];
 
-            if (hash === PASSWORD_HASH) {
-                // Contraseña correcta
-                sessionStorage.setItem('authenticated', 'true');
+            if (user && hash === user.password) {
+                currentUser = {
+                    username: selectedUser,
+                    role: user.role,
+                    icon: user.icon,
+                    comercio: user.comercio
+                };
+                
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('mainContent').classList.add('unlocked');
+                
+                updateUIForUser();
                 loadFromFirebase();
             } else {
-                // Contraseña incorrecta
+                errorMessage.textContent = '❌ Usuario o contraseña incorrectos';
                 errorMessage.classList.add('show');
                 passwordInput.value = '';
                 passwordInput.style.borderColor = '#ef4444';
@@ -803,14 +952,30 @@
             }
         }
 
+        function updateUIForUser() {
+            if (!currentUser) return;
+
+            document.getElementById('userIcon').textContent = currentUser.icon;
+            document.getElementById('userName').textContent = currentUser.username;
+
+            if (currentUser.role === 'comercio') {
+                document.getElementById('headerSubtitle').textContent = 'Consulta de Precios - Solo Lectura';
+                document.getElementById('btnAdd').style.display = 'none';
+                document.getElementById('btnUpload').style.display = 'none';
+                document.getElementById('actionsHeader').textContent = '';
+            } else {
+                document.getElementById('headerSubtitle').textContent = 'Gestión Inteligente de Precios - Sincronizado en Tiempo Real';
+            }
+        }
+
         function logout() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                sessionStorage.removeItem('authenticated');
+                sessionStorage.removeItem('currentUser');
+                currentUser = null;
                 location.reload();
             }
         }
 
-        // Permitir enter para login
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('passwordInput');
             if (passwordInput) {
@@ -822,10 +987,11 @@
             }
         });
 
-        // Verificar si ya está autenticado
-        if (sessionStorage.getItem('authenticated') === 'true') {
+        if (sessionStorage.getItem('currentUser')) {
+            currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('mainContent').classList.add('unlocked');
+            updateUIForUser();
         }
 
         // =============================================
@@ -856,9 +1022,6 @@
             updateSyncStatus('error');
         }
 
-        // =============================================
-        // DATOS LOCALES
-        // =============================================
         let data = [];
         let isUpdatingFromFirebase = false;
 
@@ -890,6 +1053,7 @@
 
         function syncToFirebase() {
             if (!isInitialized || isUpdatingFromFirebase) return;
+            if (currentUser && currentUser.role === 'comercio') return; // Los comercios no pueden sincronizar
             
             updateSyncStatus('syncing');
             dataRef.set(data)
@@ -917,9 +1081,10 @@
                 if (firebaseData && Array.isArray(firebaseData)) {
                     data = firebaseData;
                 } else if (data.length === 0) {
-                    // Si no hay datos en Firebase, usar datos iniciales
                     data = getInitialData();
-                    syncToFirebase();
+                    if (currentUser && currentUser.role === 'admin') {
+                        syncToFirebase();
+                    }
                 }
                 
                 renderTable();
@@ -937,9 +1102,6 @@
             });
         }
 
-        // =============================================
-        // DATOS INICIALES
-        // =============================================
         function getInitialData() {
             return [
                 {isIngredient: true, name: 'arroz', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
@@ -951,7 +1113,10 @@
                 {isIngredient: false, name: 'tequila', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
                 {isIngredient: false, name: 'vodka', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
                 {isIngredient: true, name: 'carne de cerdo', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: ''},
-                {isIngredient: false, name: 'pulpo a feira', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Ltd Navallon'}
+                {isIngredient: false, name: 'pulpo a feira', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Ltd Navallon'},
+                {isIngredient: false, name: 'sake', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Dragon blanco'},
+                {isIngredient: false, name: 'Sodacola', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'PaganiKing'},
+                {isIngredient: false, name: 'estrella', precioCompra: 3, precioVenta: 8, precioVentaFinal: '', satisfaccion: '', comercio: 'Ltd Navallon'}
             ];
         }
 
@@ -959,8 +1124,16 @@
         // FUNCIONES DE INTERFAZ
         // =============================================
         function updateStats() {
-            const total = data.length;
-            const ingredients = data.filter(item => item.isIngredient).length;
+            let filteredData = data;
+            
+            if (currentUser && currentUser.role === 'comercio') {
+                filteredData = data.filter(item => 
+                    !item.comercio || item.comercio === '' || item.comercio === 'Mercado' || item.comercio === currentUser.comercio
+                );
+            }
+            
+            const total = filteredData.length;
+            const ingredients = filteredData.filter(item => item.isIngredient).length;
             const products = total - ingredients;
             
             document.getElementById('totalItems').textContent = total;
@@ -968,11 +1141,27 @@
             document.getElementById('totalProducts').textContent = products;
         }
 
+        function canEditItem(item) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin') return true;
+            return false; // Los comercios no pueden editar nada
+        }
+
+        function shouldShowItem(item) {
+            if (!currentUser) return true;
+            if (currentUser.role === 'admin') return true;
+            
+            // Los comercios ven items sin comercio (Mercado) o sus propios items
+            return !item.comercio || item.comercio === '' || item.comercio === 'Mercado' || item.comercio === currentUser.comercio;
+        }
+
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
-            const sortedData = [...data].sort((a, b) => {
+            let displayData = data.filter(item => shouldShowItem(item));
+            
+            const sortedData = [...displayData].sort((a, b) => {
                 const comercioA = a.comercio || 'Mercado';
                 const comercioB = b.comercio || 'Mercado';
                 
@@ -995,46 +1184,52 @@
                     row.style.borderLeft = '5px solid #f59e0b';
                 }
                 
+                const canEdit = canEditItem(item);
+                const editableClass = canEdit ? 'editable-cell' : 'editable-cell readonly';
+                const editAction = canEdit ? `onclick="editCell(this, ${index}, 'FIELD')"` : '';
+                
                 row.innerHTML = `
                     <td class="checkbox-cell">
                         <div title="${item.isIngredient ? 'Es ingrediente' : 'Es producto'}">
                             ${item.isIngredient ? '<span style="font-size: 24px;">🌿</span>' : '<span style="font-size: 24px;">📦</span>'}
                         </div>
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'name')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'name')}>
                         <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
                             <span style="flex: 1;">${item.name}</span>
-                            <span class="edit-icon">✎</span>
+                            ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                         </div>
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'comercio')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'comercio')}>
                         <span style="color: ${item.comercio ? (item.comercio === 'Mercado' ? '#f59e0b' : '#667eea') : '#999'}; font-weight: ${item.comercio ? '600' : '400'};">${item.comercio || 'Mercado'}</span>
-                        <span class="edit-icon">✎</span>
+                        ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioCompra')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'precioCompra')}>
                         <span>${item.precioCompra}</span>
-                        <span class="edit-icon">✎</span>
+                        ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioVenta')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'precioVenta')}>
                         <span>${item.precioVenta}</span>
-                        <span class="edit-icon">✎</span>
+                        ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'precioVentaFinal')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'precioVentaFinal')}>
                         <span>${item.precioVentaFinal}</span>
-                        <span class="edit-icon">✎</span>
+                        ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                     </td>
-                    <td class="editable-cell" onclick="editCell(this, ${index}, 'satisfaccion')">
+                    <td class="${editableClass}" ${editAction.replace('FIELD', 'satisfaccion')}>
                         <span>${item.satisfaccion}${item.satisfaccion ? '%' : ''}</span>
-                        <span class="edit-icon">✎</span>
+                        ${canEdit ? '<span class="edit-icon">✎</span>' : ''}
                     </td>
                     <td class="actions">
-                        <button class="btn-toggle" onclick="toggleIngredient(${index})" 
-                                style="background: ${item.isIngredient ? 'linear-gradient(135deg, #8b5cf6, #7c3aed)' : 'linear-gradient(135deg, #10b981, #059669)'};">
-                            <span style="position: relative; z-index: 1;">${item.isIngredient ? '📦 Hacer Producto' : '🌿 Hacer Ingrediente'}</span>
-                        </button>
-                        <button class="btn-delete" onclick="deleteRow(${index})">
-                            <span style="position: relative; z-index: 1;">🗑️ Eliminar</span>
-                        </button>
+                        ${canEdit ? `
+                            <button class="btn-toggle" onclick="toggleIngredient(${index})" 
+                                    style="background: ${item.isIngredient ? 'linear-gradient(135deg, #8b5cf6, #7c3aed)' : 'linear-gradient(135deg, #10b981, #059669)'};">
+                                <span style="position: relative; z-index: 1;">${item.isIngredient ? '📦 Hacer Producto' : '🌿 Hacer Ingrediente'}</span>
+                            </button>
+                            <button class="btn-delete" onclick="deleteRow(${index})">
+                                <span style="position: relative; z-index: 1;">🗑️ Eliminar</span>
+                            </button>
+                        ` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -1044,6 +1239,7 @@
         }
 
         function editCell(cell, index, field) {
+            if (!canEditItem(data[index])) return;
             if (cell.querySelector('input')) return;
             
             const currentValue = data[index][field];
@@ -1072,12 +1268,14 @@
         }
 
         function toggleIngredient(index) {
+            if (!canEditItem(data[index])) return;
             data[index].isIngredient = !data[index].isIngredient;
             syncToFirebase();
             renderTable();
         }
 
         function deleteRow(index) {
+            if (!canEditItem(data[index])) return;
             if (confirm('¿Estás seguro de que quieres eliminar este item?')) {
                 data.splice(index, 1);
                 syncToFirebase();
@@ -1086,6 +1284,7 @@
         }
 
         function addNewRow() {
+            if (!currentUser || currentUser.role !== 'admin') return;
             data.unshift({
                 isIngredient: false,
                 name: 'Nuevo Item',
@@ -1110,12 +1309,17 @@
         }
 
         function downloadJSON() {
-            const jsonData = JSON.stringify(data, null, 2);
+            let exportData = data;
+            if (currentUser && currentUser.role === 'comercio') {
+                exportData = data.filter(item => shouldShowItem(item));
+            }
+            
+            const jsonData = JSON.stringify(exportData, null, 2);
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `negocios_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `negocios_${currentUser ? currentUser.username : 'data'}_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1123,6 +1327,11 @@
         }
 
         function loadJSON(event) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                alert('❌ Solo el administrador puede cargar archivos');
+                return;
+            }
+            
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1166,11 +1375,10 @@
             event.target.value = '';
         }
 
-        // =============================================
-        // INICIALIZACIÓN
-        // =============================================
         window.addEventListener('load', () => {
-            loadFromFirebase();
+            if (sessionStorage.getItem('currentUser')) {
+                loadFromFirebase();
+            }
         });
     </script>
 </body>
