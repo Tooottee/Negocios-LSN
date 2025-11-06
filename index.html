@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,141 +39,7 @@
             0% { transform: translate(0, 0); }
             100% { transform: translate(50px, 50px); }
         }
-
-        /* ===== PANTALLA DE LOGIN ===== */
-        .login-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            backdrop-filter: blur(10px);
-        }
-
-        .login-box {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 60px 50px;
-            border-radius: 30px;
-            box-shadow: 0 30px 90px rgba(0,0,0,0.4);
-            text-align: center;
-            max-width: 450px;
-            width: 90%;
-            animation: fadeInScale 0.5s ease-out;
-        }
-
-        @keyframes fadeInScale {
-            from { 
-                opacity: 0; 
-                transform: scale(0.9);
-            }
-            to { 
-                opacity: 1; 
-                transform: scale(1);
-            }
-        }
-
-        .login-box h2 {
-            font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .login-box p {
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
-
-        .login-box .lock-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-        }
-
-        .password-input-wrapper {
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .password-input-wrapper input {
-            width: 100%;
-            padding: 18px 25px;
-            border: 3px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .password-input-wrapper input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Poppins', sans-serif;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-        }
-
-        .login-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 14px;
-            margin-top: 15px;
-            font-weight: 500;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
         
-        /* ===== CONTENIDO PRINCIPAL (OCULTO INICIALMENTE) ===== */
-        .main-content {
-            display: none;
-        }
-
-        .main-content.unlocked {
-            display: block;
-            animation: fadeIn 0.6s ease-out;
-        }
-
         .container {
             max-width: 1500px;
             margin: 0 auto;
@@ -184,6 +49,7 @@
             overflow: hidden;
             backdrop-filter: blur(10px);
             position: relative;
+            animation: fadeIn 0.6s ease-out;
         }
         
         @keyframes fadeIn {
@@ -247,28 +113,6 @@
             gap: 8px;
             z-index: 2;
         }
-
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            z-index: 2;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
-        }
         
         .sync-indicator {
             width: 10px;
@@ -288,11 +132,6 @@
             animation: none;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -657,98 +496,72 @@
             .search-box {
                 width: 100%;
             }
-
-            .login-box {
-                padding: 40px 30px;
-            }
-
-            .login-box h2 {
-                font-size: 2em;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- PANTALLA DE LOGIN -->
-    <div class="login-container" id="loginContainer">
-        <div class="login-box">
-            <div class="lock-icon">🔒</div>
-            <h2>Acceso Restringido</h2>
-            <p>Ingresa la contraseña para continuar</p>
-            <div class="password-input-wrapper">
-                <input type="password" id="passwordInput" placeholder="Contraseña" autocomplete="off">
-            </div>
-            <button class="login-btn" onclick="checkPassword()">Acceder</button>
-            <div class="error-message" id="errorMessage">❌ Contraseña incorrecta</div>
-        </div>
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="main-content" id="mainContent">
-        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-            <div class="loading-spinner"></div>
+    <div class="container">
+        <div class="header">
+            <div class="sync-status">
+                <div class="sync-indicator" id="syncIndicator"></div>
+                <span id="syncStatus">Conectado</span>
+            </div>
+            <h1>💼 NEGOCIOS</h1>
+            <p>Gestión Inteligente de Precios - Sincronizado en Tiempo Real</p>
         </div>
-
-        <div class="container">
-            <div class="header">
-                <button class="logout-btn" onclick="logout()">🚪 Cerrar Sesión</button>
-                <div class="sync-status">
-                    <div class="sync-indicator" id="syncIndicator"></div>
-                    <span id="syncStatus">Conectado</span>
-                </div>
-                <h1>💼 NEGOCIOS</h1>
-                <p>Gestión Inteligente de Precios - Sincronizado en Tiempo Real</p>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalItems">0</div>
+                <div class="stat-label">Total Items</div>
             </div>
-            
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalItems">0</div>
-                    <div class="stat-label">Total Items</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalIngredients">0</div>
-                    <div class="stat-label">Ingredientes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalProducts">0</div>
-                    <div class="stat-label">Productos</div>
-                </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalIngredients">0</div>
+                <div class="stat-label">Ingredientes</div>
             </div>
-            
-            <div class="controls">
-                <button class="btn btn-add" onclick="addNewRow()">
-                    <span style="position: relative; z-index: 1;">➕ Agregar Item</span>
-                </button>
-                <button class="btn btn-download" onclick="downloadJSON()">
-                    <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
-                </button>
-                <button class="btn btn-upload" onclick="document.getElementById('fileInput').click()">
-                    <span style="position: relative; z-index: 1;">📂 Cargar JSON</span>
-                </button>
-                <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadJSON(event)">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre..." onkeyup="filterTable()">
-                </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalProducts">0</div>
+                <div class="stat-label">Productos</div>
             </div>
-            
-            <div class="table-container">
-                <table id="negociosTable">
-                    <thead>
-                        <tr>
-                            <th>TIPO</th>
-                            <th>ITEM</th>
-                            <th>COMERCIO</th>
-                            <th>PRECIO COMPRA (MERCADO)</th>
-                            <th>PRECIO VENTA (LOCALES)</th>
-                            <th>PRECIO VENTA (FINAL)</th>
-                            <th>% SATISFACCIÓN (+ 🍕/💧)</th>
-                            <th>ACCIONES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
-                </table>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-add" onclick="addNewRow()">
+                <span style="position: relative; z-index: 1;">➕ Agregar Item</span>
+            </button>
+            <button class="btn btn-download" onclick="downloadJSON()">
+                <span style="position: relative; z-index: 1;">💾 Descargar JSON</span>
+            </button>
+            <button class="btn btn-upload" onclick="document.getElementById('fileInput').click()">
+                <span style="position: relative; z-index: 1;">📂 Cargar JSON</span>
+            </button>
+            <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="loadJSON(event)">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre..." onkeyup="filterTable()">
             </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="negociosTable">
+                <thead>
+                    <tr>
+                        <th>TIPO</th>
+                        <th>ITEM</th>
+                        <th>COMERCIO</th>
+                        <th>PRECIO COMPRA (MERCADO)</th>
+                        <th>PRECIO VENTA (LOCALES)</th>
+                        <th>PRECIO VENTA (FINAL)</th>
+                        <th>% SATISFACCIÓN (+ 🍕/💧)</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -758,89 +571,20 @@
 
     <script>
         // =============================================
-        // SISTEMA DE AUTENTICACIÓN
-        // =============================================
-        // Hash SHA-256 de la contraseña: "negocios2024"
-        // Para cambiar la contraseña, genera un nuevo hash en: https://emn178.github.io/online-tools/sha256.html
-        const PASSWORD_HASH = "7d5866c6af1142ba783411bef8b0ccab65993ac217285a7ab6203f58fa0a5de1";
-
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-
-        async function checkPassword() {
-            const passwordInput = document.getElementById('passwordInput');
-            const password = passwordInput.value;
-            const errorMessage = document.getElementById('errorMessage');
-
-            if (!password) {
-                errorMessage.classList.add('show');
-                setTimeout(() => errorMessage.classList.remove('show'), 3000);
-                return;
-            }
-
-            const hash = await sha256(password);
-
-            if (hash === PASSWORD_HASH) {
-                // Contraseña correcta
-                sessionStorage.setItem('authenticated', 'true');
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('mainContent').classList.add('unlocked');
-                loadFromFirebase();
-            } else {
-                // Contraseña incorrecta
-                errorMessage.classList.add('show');
-                passwordInput.value = '';
-                passwordInput.style.borderColor = '#ef4444';
-                setTimeout(() => {
-                    errorMessage.classList.remove('show');
-                    passwordInput.style.borderColor = '#e0e0e0';
-                }, 3000);
-            }
-        }
-
-        function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                sessionStorage.removeItem('authenticated');
-                location.reload();
-            }
-        }
-
-        // Permitir enter para login
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordInput = document.getElementById('passwordInput');
-            if (passwordInput) {
-                passwordInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        checkPassword();
-                    }
-                });
-            }
-        });
-
-        // Verificar si ya está autenticado
-        if (sessionStorage.getItem('authenticated') === 'true') {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('mainContent').classList.add('unlocked');
-        }
-
-        // =============================================
         // CONFIGURACIÓN DE FIREBASE
         // =============================================
+        // IMPORTANTE: Reemplaza esto con tu configuración de Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyDbiCuTAjboFuk_If3EOFnk3sglmAzFlY4",
-          authDomain: "negocios-lsn.firebaseapp.com",
-          databaseURL: "https://negocios-lsn-default-rtdb.europe-west1.firebasedatabase.app",
-          projectId: "negocios-lsn",
-          storageBucket: "negocios-lsn.firebasestorage.app",
-          messagingSenderId: "221131910029",
-          appId: "1:221131910029:web:ab643f05717d0f19ebebc4"
+            apiKey: "AIzaSyDbiCuTAjboFuk_If3EOFnk3sglmAzFlY4",
+            authDomain: "negocios-lsn.firebaseapp.com",
+            databaseURL: "https://negocios-lsn-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "negocios-lsn",
+            storageBucket: "negocios-lsn.firebasestorage.app",
+            messagingSenderId: "221131910029",
+            appId: "1:221131910029:web:ab643f05717d0f19ebebc4"
         };
 
+        // Inicializar Firebase
         let database;
         let dataRef;
         let isInitialized = false;
@@ -854,6 +598,7 @@
         } catch (error) {
             console.error('Error al inicializar Firebase:', error);
             updateSyncStatus('error');
+            alert('⚠️ Configura Firebase para habilitar la sincronización en tiempo real.\n\nVe a: https://console.firebase.google.com');
         }
 
         // =============================================
@@ -1173,4 +918,3 @@
     </script>
 </body>
 </html>
-
